@@ -9,9 +9,14 @@ from absl import logging
 import numpy as np
 import oct2py
 
+from importlib.resources import files,as_file
+
+with as_file(files('meqpy.matlab')) as meq_matlab_path:
+    MEQ_MATLAB_PATH = str(meq_matlab_path.absolute())
+
 _PATHS = (
     'meq',
-    'meqpy/matlab',
+    MEQ_MATLAB_PATH,
     'genlib',
     'octave_optim/inst',
     'octave_control',
