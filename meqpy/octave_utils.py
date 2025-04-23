@@ -11,12 +11,8 @@ import oct2py
 
 from importlib.resources import files,as_file
 
-with as_file(files('meqpy.matlab')) as meq_matlab_path:
-    MEQ_MATLAB_PATH = str(meq_matlab_path.absolute())
-
 _PATHS = (
     'meq',
-    MEQ_MATLAB_PATH,
     'genlib',
     'octave_optim/inst',
     'octave_control',
@@ -29,10 +25,15 @@ def _add_octave_paths(
   """Import paths for octave."""
   if root_dir is None:
     root_dir = os.environ['MAT_ROOT']
+
   for path in paths:
     logging.info('adding %s to octave paths', path)
     octave.addpath(octave.genpath(
         os.path.join(root_dir, path)))
+
+  with as_file(files('meqpy.matlab')) as meq_matlab_path:
+    logging.info('adding %s to octave paths', meq_matlab_path)
+    octave.addpath(octave.genpath(str(meq_matlab_path.absolute())))
 
   return octave
 
