@@ -22,8 +22,7 @@ import shutil
 import os
 
 
-def safe_copy(from_path: pathlib.PurePath, to_path: pathlib.PurePath,
-              ) -> None:
+def safe_copy(from_path: pathlib.PurePath, to_path: pathlib.PurePath) -> None:
   """Copies the file to the target directory and then does an atomic rename.
 
   Because renames are atomic, this avoids the problem of two processes

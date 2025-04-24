@@ -15,7 +15,9 @@ sudo apt-get install octave-dev
 
 * Download the latest version of MEQ:
 
-See the repository instructions
+Requires access to meq from EPFL -
+https://www.epfl.ch/research/domains/swiss-plasma-center/meq/. See
+repository for installation instructions.
 
 * Build MEQ using Octave following the instructions in the MEQ repo. This will
 create a `genlib` directory in the current directory.
