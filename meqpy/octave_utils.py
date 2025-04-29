@@ -13,7 +13,9 @@
 # limitations under the License.
 
 """Utilities for running Octave."""
+
 from collections.abc import Mapping, Sequence
+from importlib import resources
 import itertools
 import logging as std_logging
 import os
@@ -23,9 +25,9 @@ from absl import logging
 import numpy as np
 import oct2py
 
+
 _PATHS = (
     'meq',
-    'meqpy/matlab',
     'genlib',
     'octave_optim/inst',
     'octave_control',
@@ -33,15 +35,20 @@ _PATHS = (
 
 
 def _add_octave_paths(
-    octave: oct2py.Oct2Py, paths: Sequence[str],
-    root_dir: str | None = None) -> oct2py.Oct2Py:
+    octave: oct2py.Oct2Py, paths: Sequence[str], root_dir: str | None = None
+) -> oct2py.Oct2Py:
   """Import paths for octave."""
   if root_dir is None:
     root_dir = os.environ['MAT_ROOT']
+
   for path in paths:
     logging.info('adding %s to octave paths', path)
-    octave.addpath(octave.genpath(
-        os.path.join(root_dir, path)))
+    octave.addpath(octave.genpath(os.path.join(root_dir, path)))
+
+  logging.info('adding meqpy.matlab to octave paths')
+  with resources.as_file(resources.files('meqpy.matlab')) as meq_matlab_path:
+    logging.info('adding %s to octave paths', meq_matlab_path)
+    octave.addpath(octave.genpath(str(meq_matlab_path.absolute())))
 
   return octave
 
