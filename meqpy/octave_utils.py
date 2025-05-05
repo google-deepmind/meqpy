@@ -175,3 +175,56 @@ def maybe_remove_from_struct(
         f" rmfield({struct_name}, '{var}'); end;\n"
     )
   octave.eval(cmd)
+
+
+def meq_params_dict_to_str(
+    meq_params: dict[str, Any]) -> str:
+  """
+  Converts a dictionary of MEQ parameters into a formatted string representation, 
+  for use in e.g. FGE/FBT calls. 
+  
+  Args:
+    meq_params (dict[str, Any]): A dictionary of MEQ parameters to be converted.
+  Returns:
+    str: A formatted string representation of the input dictionary.
+  Raises:
+    ValueError: If a value in the dictionary is of an unsupported type.
+  Example:
+    meq_params = {
+        "cde": "OhmTor_rigid_0D",
+        "anajac": True,
+        "debug": 2,
+        "agcon": ["Wk", "qA"],
+    }
+    result = meq_params_dict_to_str(meq_params)
+    print(result)  # Output: "'cde', 'OhmTor_rigid_0D', 'anajac', 1, 'debug', 2, 'agcon', {'Wk','qA'}"
+  """
+    
+
+    s = ''
+    for k, v in meq_params.items():
+
+        # Parse string entries. Example: {"cde": "OhmTor_rigid_0D"} --> "'cde', 'OhmTor_rigid_0D'"
+        if isinstance(v, str):
+            s += f"'{k}', '{v}', "      
+
+        # Parse bool entries. Example: {"anajac": True} --> "'anajac', 1"
+        elif isinstance(v, bool):       
+            s += f"'{k}', {int(v)}, "   
+
+        # Parse numeric entries. Example: {"debug": 2} --> "'debug', 2"
+        elif isinstance(v, (int, float, complex)):
+            s += f"'{k}', {v}, "        
+        
+        # Parse list of strings. Example: {"agcon": ["Wk", "qA"]} --> "'agcon', {'Wk','qA'}"
+        elif isinstance(v, list) and all(isinstance(i, str) for i in v):        
+            cell_array_str = "{" + ",".join([f"'{i}'" for i in v]) + "}"   
+            s += f"'{k}', {cell_array_str}, "      
+        else:
+          raise ValueError(
+              f"Unsupported type for key '{k}': type({v}) = {type(v)}. Supported types are: "
+              "str, bool, int, float, complex, list of str."
+          )          
+    s = s[:-2]  # Remove the last comma and space
+    
+    return s
