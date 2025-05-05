@@ -308,7 +308,7 @@ class MeqPy:
         geometry and parameters.
       default_meq_params: default parameters to override in L.P for fge.
     """
-    meq_params_str = ", ".join([f"'{k}', {v}" for k, v in default_meq_params.items()])
+    meq_params_str = octave_utils.meq_params_dict_to_str(default_meq_params)
     self.octave_eval(f"Lfge = fge('{tokamak}',{shot},0,{meq_params_str});")
 
   def _set_fge_inputs_using_fbt(
@@ -324,7 +324,7 @@ class MeqPy:
   def _init_fbt_directly(self, tokamak: str, shot: int,
                          default_meq_params: Mapping[str, Any] | None = None):
     """Initialize FBT directly, calculates the precomputed quanties (L)."""    
-    meq_params_str = ", ".join([f"'{k}', {v}" for k, v in default_meq_params.items()])
+    meq_params_str = octave_utils.meq_params_dict_to_str(default_meq_params)
     self.octave_eval(f"Lfbt = fbt('{tokamak}',{shot},0,{meq_params_str});")
 
   def _set_fbt_inputs_directly(self, time: float):
