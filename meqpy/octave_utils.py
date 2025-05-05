@@ -179,28 +179,26 @@ def maybe_remove_from_struct(
 
 def meq_params_dict_to_str(
     meq_params: dict[str, Any]) -> str:
-  """
-  Converts a dictionary of MEQ parameters into a formatted string representation, 
-  for use in e.g. FGE/FBT calls. 
-  
-  Args:
-    meq_params (dict[str, Any]): A dictionary of MEQ parameters to be converted.
-  Returns:
-    str: A formatted string representation of the input dictionary.
-  Raises:
-    ValueError: If a value in the dictionary is of an unsupported type.
-  Example:
-    meq_params = {
-        "cde": "OhmTor_rigid_0D",
-        "anajac": True,
-        "debug": 2,
-        "agcon": ["Wk", "qA"],
-    }
-    result = meq_params_dict_to_str(meq_params)
-    print(result)  # Output: "'cde', 'OhmTor_rigid_0D', 'anajac', 1, 'debug', 2, 'agcon', {'Wk','qA'}"
-  """
+    """
+    Converts a dictionary of MEQ parameters into a formatted string representation, 
+    for use in e.g. FGE/FBT calls. 
     
-
+    Args:
+      meq_params (dict[str, Any]): A dictionary of MEQ parameters to be converted.
+    Returns:
+      str: A formatted string representation of the input dictionary.
+    Raises:
+      ValueError: If a value in the dictionary is of an unsupported type.
+    Example:
+      meq_params = {
+          "cde": "OhmTor_rigid_0D",
+          "anajac": True,
+          "debug": 2,
+          "agcon": ["Wk", "qA"],
+      }
+      result = meq_params_dict_to_str(meq_params)
+      print(result)  # Output: "'cde', 'OhmTor_rigid_0D', 'anajac', 1, 'debug', 2, 'agcon', {'Wk','qA'}"
+    """
     s = ''
     for k, v in meq_params.items():
 

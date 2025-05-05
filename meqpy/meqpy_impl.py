@@ -140,6 +140,7 @@ class MeqPy:
       source: MeqSource,
       cde: str | None = None,
       default_meq_params: MutableMapping[str, Any] | None = None,
+      default_fge_params: MutableMapping[str, Any] | None = None,
       default_fbt_params: MutableMapping[str, Any] | None = None,
   ) -> None:
     """Initialize FGE creating L and LX structures.
@@ -158,17 +159,19 @@ class MeqPy:
         default will be used.
       default_meq_params: default parameters to override in L.P for fge and fbt.
       default_fbt_params: additional default params to use in fbt.
-    """
+    """    
     default_meq_params = default_meq_params or {}
+    default_fge_params = default_fge_params or {}
     default_fbt_params = default_fbt_params or {}
-    combined_fbt_params = default_fbt_params | default_meq_params
+    combined_fge_params = default_meq_params | default_fge_params
+    combined_fbt_params = default_meq_params | default_fbt_params
     self._init_fge(
         tokamak,
         shot,
         time,
         source,
         cde,
-        default_meq_params,
+        combined_fge_params,
         combined_fbt_params,
     )
 
@@ -179,14 +182,14 @@ class MeqPy:
       time: float,
       source: MeqSource,
       cde: str | None = None,
-      default_meq_params: MutableMapping[str, Any] | None = None,
+      combined_fge_params: MutableMapping[str, Any] | None = None,
       combined_fbt_params: MutableMapping[str, Any] | None = None,
   ) -> None:
     """Initialise FGE creating L and LX structures."""
     del cde  # Unused when using MEQ_DIRECT, used for other sources.
     match source:
       case MeqSource.MEQ_DIRECT:
-        self._init_fge_directly(tokamak, shot, default_meq_params)
+        self._init_fge_directly(tokamak, shot, combined_fge_params)
         self._set_fge_inputs_using_fbt(tokamak, shot, time, combined_fbt_params)
       case _:
         raise ValueError(f"Unsupported source: {source}")
@@ -295,7 +298,7 @@ class MeqPy:
         raise ValueError(f"Unsupported source: {source}")
 
   def _init_fge_directly(self, tokamak: str, shot: int,
-                         default_meq_params: Mapping[str, Any] | None = None):
+                         default_fge_params: Mapping[str, Any] | None = None):
     """Initialize FGE directly, calculates the precomputed quanties stored in L.
 
     This only works when the appropriate machine description / parameter
@@ -306,17 +309,17 @@ class MeqPy:
       shot: the shot number of the initial condition to initialise the tokamak
         with. Different shots across the same tokamak may have different
         geometry and parameters.
-      default_meq_params: default parameters to override in L.P for fge.
+      default_fge_params: default parameters to override in L.P for fge.
     """
-    meq_params_str = octave_utils.meq_params_dict_to_str(default_meq_params)
-    self.octave_eval(f"Lfge = fge('{tokamak}',{shot},0,{meq_params_str});")
+    fge_params_str = octave_utils.meq_params_dict_to_str(default_fge_params)
+    self.octave_eval(f"Lfge = fge('{tokamak}',{shot},0,{fge_params_str});")
 
   def _set_fge_inputs_using_fbt(
       self, tokamak: str, shot: int, time: float,
-      default_meq_params: Mapping[str, Any] | None = None,
+      default_fbt_params: Mapping[str, Any] | None = None,
   ) -> None:
     """Initialize FGE initial condition using FBT."""
-    self._init_fbt_directly(tokamak, shot, default_meq_params)
+    self._init_fbt_directly(tokamak, shot, default_fbt_params)
     self._set_fbt_inputs_directly(time)
     self.run_fbt()
     self.set_fge_input_from_fbt_run(time)
