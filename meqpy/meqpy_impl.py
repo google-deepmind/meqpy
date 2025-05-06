@@ -323,7 +323,7 @@ class MeqPy:
 
   def _init_fbt_directly(self, tokamak: str, shot: int,
                          default_meq_params: Mapping[str, Any] | None = None):
-    """Initialize FBT directly, calculates the precomputed quanties (L)."""    
+    """Initialize FBT directly, calculates the precomputed quanties (L)."""
     meq_params_str = octave_utils.meq_params_dict_to_str(default_meq_params)
     self.octave_eval(f"Lfbt = fbt('{tokamak}',{shot},0,{meq_params_str});")
 
