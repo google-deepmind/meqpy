@@ -70,7 +70,7 @@ class MeqSource(enum.Enum):
   """Source of the MEQ data."""
 
   MEQ_DIRECT = "meq-direct"  # Use MEQ methods directly to init FGE and FBT
-
+  PULSE_SIM_CONFIG = "pulse-sim-config"  # Use configs defined by pulse-sim repo to init FGE
 
 class MeqPy:
   """Class for interfacing MEQ to python.
@@ -141,6 +141,7 @@ class MeqPy:
       cde: str | None = None,
       default_meq_params: MutableMapping[str, Any] | None = None,      
       default_fbt_params: MutableMapping[str, Any] | None = None,
+      sim_config: MutableMapping[str, Any] | None = None,
   ) -> None:
     """Initialize FGE creating L and LX structures.
 
@@ -170,6 +171,7 @@ class MeqPy:
         cde,
         default_meq_params,
         combined_fbt_params,
+        sim_config
     )
 
   def _init_fge(
@@ -181,6 +183,7 @@ class MeqPy:
       cde: str | None = None,
       default_meq_params: MutableMapping[str, Any] | None = None,
       combined_fbt_params: MutableMapping[str, Any] | None = None,
+      sim_config: Mapping[str, Any] | None = None,
   ) -> None:
     """Initialise FGE creating L and LX structures."""
     del cde  # Unused when using MEQ_DIRECT, used for other sources.
@@ -188,6 +191,8 @@ class MeqPy:
       case MeqSource.MEQ_DIRECT:
         self._init_fge_directly(tokamak, shot, default_meq_params)
         self._set_fge_inputs_using_fbt(tokamak, shot, time, combined_fbt_params)
+      case MeqSource.PULSE_SIM_CONFIG:
+        self._init_fge_from_pulse_sim_config(sim_config, default_meq_params)
       case _:
         raise ValueError(f"Unsupported source: {source}")
 
@@ -310,6 +315,32 @@ class MeqPy:
     """
     meq_params_str = octave_utils.meq_params_dict_to_str(default_meq_params)
     self.octave_eval(f"Lfge = fge('{tokamak}',{shot},0,{meq_params_str});")
+
+
+  def _init_fge_from_pulse_sim_config(self, sim_config: Mapping[str, Any], default_meq_params: Mapping[str, Any] | None = None):
+    """
+    Initialize FGE using sim_config dictionaries defined by the pulse-sim repo.
+    """    
+    tokamak = sim_config["tokamak"]
+    t0 = sim_config['time']['t_start']    
+    meq_params = default_meq_params | sim_config["fge_settings"] 
+    meq_params_str = octave_utils.meq_params_dict_to_str(meq_params)
+    LX_overrides = {k: timeseries.evaluate(t0) for k, timeseries in sim_config["plasma_properties"].items()}
+
+    cmds = [ 
+        "pkg load control",   # load control package, do "pkg install -forge control" within the octave terminal if not installed
+        f"Lfbt = load('{sim_config['initialization_settings']['L_init_filepath']}').L;",
+        f"LYfbt = load('{sim_config['initialization_settings']['LY_init_filepath']}').LY;",
+        f"Lfge = fge('{tokamak}',0,0,{meq_params_str});",
+        "LX0 = meqxconvert(Lfbt,LYfbt,Lfge);"
+        ]
+    cmds += [f"LX0.{k} = {v};" for k, v in LX_overrides.items()]
+    cmds += [f"LXfge = fgex('{tokamak}',{t0},Lfge,LX0);", 
+            "if Lfge.P.lin, Lfge = fgel(Lfge,LXfge); end"]
+    cmds_str = " \n".join(cmds)
+
+    self.octave_eval(cmds_str, log=True)
+
 
   def _set_fge_inputs_using_fbt(
       self, tokamak: str, shot: int, time: float,
