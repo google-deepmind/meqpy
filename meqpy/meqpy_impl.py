@@ -139,7 +139,7 @@ class MeqPy:
       time: float,
       source: MeqSource,
       cde: str | None = None,
-      default_meq_params: MutableMapping[str, Any] | None = None,      
+      default_meq_params: MutableMapping[str, Any] | None = None,
       default_fbt_params: MutableMapping[str, Any] | None = None,
   ) -> None:
     """Initialize FGE creating L and LX structures.
@@ -158,7 +158,7 @@ class MeqPy:
         default will be used.
       default_meq_params: default parameters to override in L.P for fge and fbt.
       default_fbt_params: additional default params to use in fbt.
-    """    
+    """
     default_meq_params = default_meq_params or {}
     default_fbt_params = default_fbt_params or {}
     combined_fbt_params = default_fbt_params | default_meq_params
