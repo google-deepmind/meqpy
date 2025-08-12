@@ -139,6 +139,8 @@ class MeqPy:
       time: float,
       source: MeqSource,
       cde: str | None = None,
+      icsint: bool = False,
+      ilim: int = 1,
       default_meq_params: MutableMapping[str, Any] | None = None,
       default_fbt_params: MutableMapping[str, Any] | None = None,
   ) -> None:
@@ -156,6 +158,8 @@ class MeqPy:
         condition.
       cde: the cde to use when initializing fge, if not provided then the
         default will be used.
+      icsint: whether to use cubic splines for interpolation.
+      ilim: limiter interpolation method selector.
       default_meq_params: default parameters to override in L.P for fge and fbt.
       default_fbt_params: additional default params to use in fbt.
     """
@@ -168,6 +172,8 @@ class MeqPy:
         time,
         source,
         cde,
+        icsint,
+        ilim,
         default_meq_params,
         combined_fbt_params,
     )
@@ -179,6 +185,8 @@ class MeqPy:
       time: float,
       source: MeqSource,
       cde: str | None = None,
+      icsint: bool = False,
+      ilim: int = 1,
       default_meq_params: MutableMapping[str, Any] | None = None,
       combined_fbt_params: MutableMapping[str, Any] | None = None,
   ) -> None:
@@ -186,7 +194,7 @@ class MeqPy:
     del cde  # Unused when using MEQ_DIRECT, used for other sources.
     match source:
       case MeqSource.MEQ_DIRECT:
-        self._init_fge_directly(tokamak, shot, default_meq_params)
+        self._init_fge_directly(tokamak, shot, icsint, ilim, default_meq_params)
         self._set_fge_inputs_using_fbt(tokamak, shot, time, combined_fbt_params)
       case _:
         raise ValueError(f"Unsupported source: {source}")
@@ -290,11 +298,12 @@ class MeqPy:
     del cde, time  # Unused when using MEQ_DIRECT
     match source:
       case MeqSource.MEQ_DIRECT:
-        self._init_fge_directly(tokamak, shot, default_meq_params)
+        self._init_fge_directly(tokamak, shot, False, 1, default_meq_params)
       case _:
         raise ValueError(f"Unsupported source: {source}")
 
   def _init_fge_directly(self, tokamak: str, shot: int,
+                         icsint: bool = False, ilim: int = 1,
                          default_meq_params: Mapping[str, Any] | None = None):
     """Initialize FGE directly, calculates the precomputed quanties stored in L.
 
@@ -306,9 +315,15 @@ class MeqPy:
       shot: the shot number of the initial condition to initialise the tokamak
         with. Different shots across the same tokamak may have different
         geometry and parameters.
+      icsint: whether to use icsint, which is a method to improve the initial
+        condition.
+      ilim: limiter interpolation method selector.
       default_meq_params: default parameters to override in L.P for fge.
     """
-    self.octave_eval(f"Lfge = fge('{tokamak}',{shot});", log=True)
+    self.octave_eval(
+        f"Lfge = fge('{tokamak}',{shot},[],"
+        f"'icsint',{str(icsint).lower()},'ilim',{ilim});",
+        log=True)
     self.set_fge_parameters(parameters=default_meq_params)
 
   def _set_fge_inputs_using_fbt(
