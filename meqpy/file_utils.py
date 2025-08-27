@@ -34,14 +34,15 @@ def safe_copy(from_path: pathlib.PurePath, to_path: pathlib.PurePath) -> None:
 
   Args:
     from_path: path to copy from.
-    to_path: path to copy to.
+    to_path: path to copy to. If the path does not exist, it will be created
+      with permissions 0o775.
     immutable: Whether the file should be immutable. Setting to true allows
       replacement but no appending. It should also load slightly faster.
   """
   if not os.path.exists(from_path):
     return
   if not os.path.exists(to_path.parent):
-    os.makedirs(to_path.parent)
+    os.makedirs(to_path.parent, mode=0o775)
   random_addition = ''.join(random.sample(string.ascii_letters, 9))
   new_name = f'{to_path.stem}-{random_addition}{to_path.suffix}'
   tmp_path = to_path.with_name(new_name)
