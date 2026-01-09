@@ -65,7 +65,7 @@ jax.tree_util.register_pytree_with_keys(
 # via meq).
 SCALAR_KEYS: Final[frozenset[str]] = frozenset([
     'bp', 'bpli2', 'bt', 'chi', 'chih', 'cycle', 'dz', 'dzg', 'err', 'Ft',
-    'Ft0', 'Ini', 'Ip', 'isconverged', 'lB', 'li', 'mkryl', 'mu', 'nA', 'nB',
+    'Ft0', 'Ip', 'isconverged', 'lB', 'li', 'mkryl', 'mu', 'nA', 'nB',
     'nfeval', 'niter', 'rBt', 'res', 'resC', 'rese', 'resFx', 'resp', 'resy',
     'rIp', 'rst', 'shot', 't', 'Vp', 'Wk', 'WN', 'Wp', 'Wt', 'Wt0', 'zIp'])
 
@@ -74,10 +74,10 @@ VECTOR_KEYS: Final[frozenset[str]] = frozenset([
     'ag', 'Bm', 'bpD', 'Brn', 'Brrn', 'Brzn', 'btD', 'Bzn', 'Bzrn', 'Bzzn',
     'dr2FA', 'dr2FX', 'drzFA', 'drzFX', 'dz2FA', 'dz2FX', 'F0', 'F1', 'FA',
     'FB', 'Fe', 'Fedot', 'Ff', 'Fn', 'FR', 'Ft0D', 'FtD', 'FW', 'FX', 'Ia',
-    'Iarel', 'Ie', 'IniD', 'IpD', 'Is', 'Iu', 'Iv', 'liD', 'lp', 'Lp', 'lX',
-    'nX', 'Parel', 'q95', 'qA', 'qmin', 'rA', 'raqmin', 'rB', 'rbary', 'rIpD',
-    'Rp', 'rX', 'Tarel', 'Uf', 'Um', 'Va', 'Vn', 'VpD', 'WkD', 'WND', 'WpD',
-    'Wt0D', 'WtD', 'zA', 'zB', 'zIpD', 'zX'])
+    'Iarel', 'Ie', 'Ini', 'IniD', 'IpD', 'Is', 'Iu', 'Iv', 'liD', 'lp', 'Lp',
+    'lX', 'nX', 'Parel', 'q95', 'qA', 'qmin', 'rA', 'raqmin', 'rB', 'rbary',
+    'rIpD', 'Rp', 'rX', 'Tarel', 'Uf', 'Um', 'Va', 'Vn', 'VpD', 'WkD', 'WND',
+    'WpD', 'Wt0D', 'WtD', 'zA', 'zB', 'zIpD', 'zX'])
 
 
 # These keys have shape (N, D) but D *might* be squeezed so we ensure it exists
