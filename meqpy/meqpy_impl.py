@@ -393,6 +393,7 @@ class MeqPy:
 
     # Run consolidation to regenerate values in L after updating L.P and L.G to
     # maintain consistency.
+    self.octave_eval("Lfge.G = fgeg(Lfge.G,Lfge.P);")
     self.octave_eval("Lfge = fgec(Lfge.P,Lfge.G);")
 
   def set_fbt_parameters(
