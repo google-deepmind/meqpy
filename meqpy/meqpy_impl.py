@@ -1,4 +1,4 @@
-# Copyright 2025 The meqpy Authors.
+# Copyright 2026 The meqpy Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -599,7 +599,7 @@ class MeqPy:
         LPfge.bfp{iD,1} = str2func(LPfge.bfp{iD,1});
       end
     end
-    for var = {'bfct','infct', 'eqfct'}
+    for var = {'bfct','infct', 'eqfct', 'psfct'}
       if isfield(LPfge,var) && ischar(LPfge.(var{:}))
         LPfge.(var{:}) = str2func(LPfge.(var{:}));
       end
@@ -650,7 +650,7 @@ class MeqPy:
         LPfbt.bfp{iD,1} = str2func(LPfbt.bfp{iD,1});
       end
     end
-    for var = {'bfct','infct', 'eqfct'}
+    for var = {'bfct','infct', 'eqfct', 'psfct'}
       if isfield(LPfbt,var) && ischar(LPfbt.(var{:}))
         LPfbt.(var{:}) = str2func(LPfbt.(var{:}));
       end
