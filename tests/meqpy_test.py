@@ -131,6 +131,16 @@ class MeqpyTest(parameterized.TestCase):
             temp_file, ['Foo', 'bar', 'baz'], fields_as_variables=True
         )
 
+  def test_set_mds_server(self):
+    meq_instance = meqpy_impl.MeqPy()
+    self.assertEqual(
+        'tcvdata.epfl.ch', meq_instance._octave.eval('meqmdsserver()', nout=1)
+    )
+    meq_instance.set_mds_server('localhost:1234')
+    self.assertEqual(
+        'localhost:1234', meq_instance._octave.eval('meqmdsserver()', nout=1)
+    )
+
 
 if __name__ == '__main__':
   absltest.main()
