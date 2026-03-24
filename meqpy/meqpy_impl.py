@@ -575,7 +575,7 @@ class MeqPy:
     Args:
       file_path: where to save the data.
     """
-    self._strip_function_handles("Lfge.P", "LPfge")
+    self.strip_function_handles("Lfge.P", "LPfge")
     self.octave_eval("LGfge = Lfge.G;")
     self.save_to_file(file_path, _FGETK_ENV_VARS_TO_SAVE)
 
@@ -629,7 +629,7 @@ class MeqPy:
       file_path: where to save the data.
     """
     logging.info("Saving run_fbt inputs to %s", file_path)
-    self._strip_function_handles("Lfbt.P", "LPfbt")
+    self.strip_function_handles("Lfbt.P", "LPfbt")
     self.octave_eval("LGfbt = Lfbt.G;")
 
     self.save_to_file(file_path, _FBTT_VARS_TO_SAVE)
@@ -659,7 +659,7 @@ class MeqPy:
     """
     self.octave_eval(cmd)
 
-  def _strip_function_handles(
+  def strip_function_handles(
       self,
       input_variable: str,
       output_variable: str,
@@ -669,6 +669,16 @@ class MeqPy:
         f"{output_variable} ="
         f" strip_function_handles({input_variable},'{function_name}');"
     )
+
+  def set_mds_server(self, server: str) -> None:
+    """Sets the MDSplus server address.
+
+    Args:
+      server: The address of the MDSplus server (MEQ's default value is
+      "tcvdata.epfl.ch"). The server address can optionally have a port
+      specified (e.g. "localhost:8001").
+    """
+    self.octave_eval(f"meqmdsserver('{server}');")
 
   def save_to_file(
       self,
