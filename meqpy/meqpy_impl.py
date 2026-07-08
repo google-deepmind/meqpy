@@ -165,7 +165,7 @@ class MeqPy:
     """
     default_meq_params = default_meq_params or {}
     default_fbt_params = default_fbt_params or {}
-    combined_fbt_params = default_fbt_params | default_meq_params
+    combined_fbt_params = default_fbt_params | default_meq_params  # pyrefly: ignore[unsupported-operation]
     self._init_fge(
         tokamak,
         shot,
@@ -280,8 +280,8 @@ class MeqPy:
         shot,
         time,
         source,
-        cde,
-        default_meq_params,
+        cde,  # pyrefly: ignore[bad-argument-type]
+        default_meq_params,  # pyrefly: ignore[bad-argument-type]
     )
     self.set_fge_input_from_fbt_run(time)
 
@@ -479,7 +479,7 @@ class MeqPy:
       input_overrides: Mapping[str, np.ndarray] | None = None,
   ) -> tuple[oct2py.Struct, str]:
     """Initializes fgetk_environment."""
-    self._env_num_steps = control_timestep / simulator_timestep
+    self._env_num_steps = control_timestep / simulator_timestep  # pyrefly: ignore[bad-assignment]
     if abs(self._env_num_steps - int(self._env_num_steps)) > 1e-12:
       raise ValueError(
           "Control timestep must be a multiple of simulator timestep. Was"
@@ -577,7 +577,7 @@ class MeqPy:
     """
     self._strip_function_handles("Lfge.P", "LPfge")
     self.octave_eval("LGfge = Lfge.G;")
-    self.save_to_file(file_path, _FGETK_ENV_VARS_TO_SAVE)
+    self.save_to_file(file_path, _FGETK_ENV_VARS_TO_SAVE)  # pyrefly: ignore[bad-argument-type]
 
   def _restore_fgetk_env_state(self, file_path: str | os.PathLike[str]):
     """Restores the state saved by `save_last_fgetk_env_call_state`.
@@ -589,7 +589,7 @@ class MeqPy:
     Args:
       file_path: where to save the data.
     """
-    self.load_from_file(file_path, _FGETK_ENV_VARS_TO_SAVE)
+    self.load_from_file(file_path, _FGETK_ENV_VARS_TO_SAVE)  # pyrefly: ignore[bad-argument-type]
     # Restore the function handles
     cmd = """
     % special doublet basis function case
@@ -632,7 +632,7 @@ class MeqPy:
     self._strip_function_handles("Lfbt.P", "LPfbt")
     self.octave_eval("LGfbt = Lfbt.G;")
 
-    self.save_to_file(file_path, _FBTT_VARS_TO_SAVE)
+    self.save_to_file(file_path, _FBTT_VARS_TO_SAVE)  # pyrefly: ignore[bad-argument-type]
 
   def _restore_fbt_state(self, file_path: str | os.PathLike[str]):
     """Restores the state saved by `save_run_fbt_inputs`.
@@ -640,7 +640,7 @@ class MeqPy:
     Args:
       file_path: where to save the data.
     """
-    self.load_from_file(file_path, _FBTT_VARS_TO_SAVE)
+    self.load_from_file(file_path, _FBTT_VARS_TO_SAVE)  # pyrefly: ignore[bad-argument-type]
     # Restore the function handles
     cmd = """
     % special doublet basis function case
