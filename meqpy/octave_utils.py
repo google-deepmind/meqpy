@@ -31,6 +31,7 @@ _PATHS = (
     'genlib',
     'octave_optim/inst',
     'octave_control',
+    'mds',
 )
 
 
