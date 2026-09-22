@@ -104,9 +104,16 @@ class MeqPy:
   def cleanup(self) -> None:
     """Cleanup the MEQ Oct2py instance."""
     if self._is_open:
-      self._octave.eval("clear all;")
-      self._octave.exit()
       self._is_open = False
+      try:
+        self._octave.eval("clear all;")
+      finally:
+        try:
+          self._octave.exit()
+        except Exception:  # pylint: disable=broad-except
+          # Shutting down the Octave subprocess can fail if it is slow to die.
+          # That must not fail a run that has otherwise already succeeded.
+          logging.exception("Failed to shut down the Octave session.")
 
   def octave_eval(self, cmd: str, log: bool = True, nout: int = 0, **kwargs):
     """Wrapper for octave eval with optional logging.
